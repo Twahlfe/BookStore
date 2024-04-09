@@ -1,0 +1,121 @@
+﻿@model IEnumerable<BookModel>
+
+@{
+    ViewData["Title"] = "Index";
+    
+    bool checkFav(int BookId)
+    {
+        List<int> favBook = (List<int>)ViewBag.FavBooks;
+        return favBook?.Contains(BookId) ?? false;
+    }
+}
+
+<h1>Book Gallery</h1>
+
+<a class="btn btn-info fs-4" asp-area="Admin" asp-controller="Book" asp-action="Create">Add a new book</a>
+
+<form asp-action="Index" method="get" class="fs-4">
+    <div>
+        <div>
+            <select id="filter" name="filterBy" class="form-control" asp-items="ViewBag.Genre">
+                <option value="reset">Clear filter</option>
+            </select>
+        </div>
+        <div>
+            <input type="submit" value="Filter" class="btn btn-primary" />
+        </div>
+    </div>
+</form>
+
+<table class="table bg-secondary-subtle table-hover table-striped-columns border border-dark .table-responsive">
+    <thead class="bg-secondary fs-4">
+        <tr>
+            <th>
+                @if (ViewContext.HttpContext.GetRouteValue("sortOrder")?.ToString() == "name")
+                {
+                    <a asp-route-sortOrder="name_desc">
+                        @Html.DisplayNameFor(model => model.Name)
+                    </a>
+                }
+                else
+                {
+                    <a asp-route-sortOrder = "name">
+                        @Html.DisplayNameFor(model => model.Name)
+                    </a>
+                }
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.GenreName)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Description)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Authors)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Price)
+            </th>
+            <th>
+                @if (ViewContext.HttpContext.GetRouteValue("sortOrder")?.ToString() == "date")
+                {
+                    <a asp-route-sortOrder="date_desc">
+                        @Html.DisplayNameFor(model => model.PublishDate)
+                    </a>
+                }
+                else
+                {
+                    <a asp-route-sortOrder="date">
+                        @Html.DisplayNameFor(model => model.PublishDate)
+                    </a>
+                }
+            </th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+@foreach (var item in Model) {
+        <tr>
+            <td class="fs-5">
+                <a asp-action="AddRemoveFav" asp-controller="Book" asp-route-id="@item.BookId">
+                        @if(checkFav(item.BookId)) // Show the icon for the favorite books
+                        {
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-bookmark-heart" viewBox="0 0 16 16">
+                                <path d="M2 2a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v13.5a.5.5 0 0 1-.777.416L8 13.101l-5.223 2.815A.5.5 0 0 1 2 15.5V2zm2-1a1 1 0 0 0-1 1v12.566l4.723-2.482a.5.5 0 0 1 .554 0L13 14.566V2a1 1 0 0 0-1-1H4z" />
+                            </svg>
+                        }
+                        else
+                        {
+                            <svg style="color:red" xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-bookmark" viewBox="0 0 16 16">
+                                <path fill-rule="evenodd" d="M8 4.41c1.387-1.425 4.854 1.07 0 4.277C3.146 5.48 6.613 2.986 8 4.412z" />
+                                <path d="M2 2a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v13.5a.5.5 0 0 1-.777.416L8 13.101l-5.223 2.815A.5.5 0 0 1 2 15.5V2zm2-1a1 1 0 0 0-1 1v12.566l4.723-2.482a.5.5 0 0 1 .554 0L13 14.566V2a1 1 0 0 0-1-1H4z" />
+                            </svg>
+
+                        }
+                </a>
+                @Html.DisplayFor(modelItem => item.Name)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.GenreName)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Description)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Authors)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Price)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.PublishDate)
+            </td>
+            <td>
+                    <a class="btn btn-primary" asp-area="Admin" asp-controller="Book" asp-action="Edit" asp-route-id="@item.BookId">Edit</a>
+                    <a class="btn btn-info" asp-action="Details" asp-route-id="@item.BookId">Details</a>
+                    <a class="btn btn-danger" asp-area="Admin" asp-controller="Book" asp-action="Delete" asp-route-id="@item.BookId">Delete</a>
+            </td>
+        </tr>
+}
+    </tbody>
+</table>
